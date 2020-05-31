@@ -1,3 +1,100 @@
+## 栈
+
+#### [84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+
+**解法一**：暴力解法：从 i 向两边遍历，碰到第一个小于 heights[i] 的就停下，计算长 *  宽。$O(n^2)+O(1)$
+
+**解法二**：空间换时间（栈）
+
+问题：什么时候出栈？—— 栈顶元素的高度小于当前元素的高度的时候
+
+**特殊情况**：
+
+1. 遍历完成后，栈顶元素一定可以扩散到数组末尾
+2. 弹出栈顶之后栈为空：当前位置一定可以扩散到数组最左端
+3. 栈中存在连续的高度相等的元素：直接弹出
+
+**关于处理栈问题的注意点**：在进行栈的访问的时候，一定要先判断栈非空。但是添加哨兵可以避免判断栈非空。
+
+**知识点**：单调栈（Monotone Stack）：单调不减（不增）栈可以找到左边第一个小于（大于）等于当前出栈元素的元素。
+
+liweiwei Java 版本改写：
+
+```python
+class Solution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        n = len(heights)
+        if n == 0: return 0
+        if n == 1: return heights[0]
+        area = 0
+        heights[:] = [0] + heights[:] + [0]
+        n += 2
+        stack = [0]
+        for i in range(1, n):
+            while heights[stack[-1]] > heights[i]:
+                height = heights[stack.pop()]
+                width = i - stack[-1] - 1
+                area = max(area, width * height)
+            stack.append(i)
+        return area
+```
+
+#### [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+
+**解法一**：暴力解法。对于每一个 i 往后寻找到一个比当前更高的天数输出。$O(n^2)+O(n)$
+
+**解法二**：栈。拿一个栈，存放位置。一开始为 [inf] 或者为 [101]（最大的温度为 100）$O(n)+O(n)$
+
+1. 当前元素温度 > 栈顶元素温度时：输出数组对应栈顶元素位置的数值为：当前元素 - 栈顶元素
+2. 当前元素进栈
+
+```python
+class Solution:
+    def dailyTemperatures(self, T: List[int]) -> List[int]:
+        n = len(T)
+        if n == 1: return [0]
+        T[:] = [101] + T[:] + [0]
+        n += 2
+        output = [0] * n
+        stack = [0]
+        for i in range(1, n):
+            while T[i] > T[stack[-1]]:
+                day = stack.pop()
+                output[day] = i - day
+            stack.append(i)
+        return output[1:n-1]
+```
+
+练习：42、739、496、316、901、402、581
+
+#### [496. 下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
+
+**解法一**：暴力法。对于 nums1 中的每一个元素，在 nums2 中找到其位置，然后从右边找到一个比其大的数。$O(n*m)+O(n)$
+
+**解法二**：使用单调栈。$O(n+m)+O(n)$
+
+对 nums2 使用单调栈：从头开始遍历，如果栈顶元素小于当前位置元素，则弹出栈顶，利用哈希表映射（栈顶元素对应的第一个最大为当前位置元素）。遍历到最后，栈还剩下的元素全部为找不到第一个最大的，映射为 -1。
+
+```python
+class Solution:
+    def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        n1, n2 = len(nums1), len(nums2)
+        if n1 == 0: return []
+        if n2 == 0: return [-1] * n1
+        monoStack = []
+        Hash = {}
+        for i in range(n2):
+            while monoStack and monoStack[-1] < nums2[i]:
+                Hash[monoStack.pop()] = nums2[i]
+                
+            monoStack.append(nums2[i])
+        while monoStack:
+            Hash[monoStack.pop()] = -1
+        return [Hash[nums1[i]] for i in range(n1)]
+```
+
+
+
 ## 贪心
 
 ## 回溯
@@ -413,7 +510,84 @@ class Solution:
         return myBuildTree(0, n - 1, 0, n - 1)
 ```
 
+## 滑动窗口
 
+#### [76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+
+根据 liweiwei 的 Java 版本修改：
+
+```python
+class Solution:
+    from collections import Counter
+    def minWindow(self, s: str, t: str) -> str:
+        sLen, tLen = len(s), len(t)
+        if sLen == 0 or tLen == 0 or sLen < tLen: 
+            return ""
+
+        winFreq = Counter()
+        tFreq = Counter(t)
+
+        distance = 0
+        minLen = float('inf')
+        begin = 0
+        left, right = 0, 0
+        while right < sLen:
+            charRight = s[right]
+            if tFreq[charRight] == 0:
+                right += 1
+                continue
+
+            if winFreq[charRight] < tFreq[charRight]:
+                distance += 1
+            winFreq[charRight] += 1
+            right += 1
+
+            while distance == tLen:
+
+                if right - left < minLen:
+                    minLen = right - left
+                    begin = left
+
+                charLeft = s[left]
+                if tFreq[charLeft] == 0:
+                    left += 1
+                    continue
+
+                if winFreq[charLeft] == tFreq[charLeft]:
+                    distance -= 1
+                winFreq[charLeft] -= 1
+                left += 1
+
+        if minLen > sLen:
+            return ""
+
+        return s[begin:begin + minLen]
+```
+
+复杂度：$O(|T|+|S|)+O(|T|+|S|)$
+
+相关题目：3、209、424、438、567
+
+#### [209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+
+**一、滑动窗口**：双指针
+
+```python
+class Solution:
+    def minSubArrayLen(self, s: int, nums: List[int]) -> int:
+        left, right = 0, 0
+        minLen = float('inf')
+        curSum = 0
+        while right < len(nums):
+            curSum += nums[right]
+            right += 1
+
+            while curSum >= s:
+                minLen = min(minLen, right - left)
+                curSum -= nums[left]
+                left += 1
+        return minLen if minLen != float('inf') else 0
+```
 
 
 
