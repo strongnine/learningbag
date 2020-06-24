@@ -1,5 +1,7 @@
 ## 第一章 Git 基础
 
+### 1. 基本操作
+
 #### 1.1. 配置 user 信息
 
 ```shell
@@ -17,7 +19,7 @@ $ git config --list --local
 $ git config --list --global
 ```
 
-**创建仓库**
+#### 1.3. 创建仓库
 
 ```shell
 $ git init
@@ -29,7 +31,9 @@ $ git commit -m'Add README.md'
 $ git log
 ```
 
-**往仓库里面添加文件**：参考项目 https://github.com/TTN-js/unforGITtable
+#### 1.4. 添加删除和重命名文件
+
+**往仓库里面添加删除文件**：参考项目 https://github.com/TTN-js/unforGITtable
 
 ```shell
 # status 会提示目前的状态，Untracked 代表文件从来没有被管理过
@@ -43,6 +47,9 @@ $ git log
 # 新用法：把工作区上所有已经被 git 管理的文件一起放到暂存区
 # 将文件的修改、文件的删除，添加到暂存区
 $ git add -u
+
+# 正确删除文件的方法
+$ git rm <文件名>
 ```
 
 网友「易风」的补充：
@@ -71,7 +78,9 @@ $ git reset --hard
 $ git mv readme readme.md
 ```
 
-#### **查看版本演变历史**：`git log`
+### 2. 版本管理
+
+#### 2.1. 查看历史
 
 ```shell
 # git log 不带参数的时候是整个完整的日记
@@ -89,20 +98,17 @@ $ git checkout -b temp 415c5c...
 $ git log --all
 # 还可以图形化显示
 $ git log --all --graph
+
+# 通过图形界面查看版本历史：
+# 命令行输入 gitk 会弹出图形界面
+$ gitk
 ```
 
 网友「夕夕熊」补充：
 
 > 加上 --decorate 参数，部分同学才可以显示（master）（temp）等分支信息。
 
-#### **通过图形界面查看版本历史**：
-
-```shell
-# 命令行输入 gitk 会弹出图形界面
-$ gitk
-```
-
-#### .git 目录的内容
+#### 2.2. .git 目录的内容
 
 cat 命令主要用来查看文件内容，创建文件，文件合并，追加文件内容等功能。
 cat HEAD 查看 HEAD 文件的内容
@@ -127,7 +133,7 @@ objects：存放对象 .git/objects/ 文件夹中的子文件夹都是以哈希�
 
 当创建了新的空文件夹时，使用 `status` 不会检测到这个空的文件夹。
 
-#### **分离头指针**
+#### 2.3. 分离头指针
 
 变更没有基于某个 branch，在分离头指针进行的 commit，如果没有及时合并到某个 branch，可能会被 git 当作垃圾清掉。如果这种变更是重要的，就要将其与某个 branch 绑在一起。
 
@@ -226,7 +232,7 @@ $ git reset --hard <指针>
 $ git rm <文件名>
 ```
 
-#### 2.7. 开发中临时加塞的紧急任务
+#### 2.7. 临时加塞的紧急任务 —— stash 的使用
 
 ```shell
 # 把当前状态存放
@@ -239,15 +245,17 @@ $ git stash apply
 $ git stash pop
 ```
 
-#### 2.8. 指定不需要 Git 管理的文件
+### 3. Git 管理
+
+#### 3.1. 指定不需要 Git 管理的文件
 
 `.gitignore` 文件上的内容就是表示指定类型的文件不给 Git 进行管理。
 
-#### 2.9. Git 的备份
+#### 3.2. Git 的备份
 
  ![image-20200531173028196](assets/image-20200531173028196.png)
 
-哑协议传输进度不饿空间，智能协议可见。智能协议比哑协议快。
+哑协议传输进度不可看见，智能协议可见。智能协议比哑协议快。
 
 ```shell
 # --bare 代表不带工作区的裸仓库
@@ -267,7 +275,7 @@ $ git push --set-upstream <  > <  >
 
 ## 第三章 Github 同步
 
-**配置公私钥**
+### **配置公私钥**
 
 在 Github 首页上，寻找 help，在上面有关于如何 `connecting to github with SSH` 的做法。
 
@@ -282,7 +290,7 @@ $ cat id_rsa.pub
 # 复制里面的内容，前往 github 账户设置里面添加 SSH keys
 ```
 
-**把本地仓库同步到 Github**
+### **把本地仓库同步到 Github**
 
 ```bash
 # 添加一个新的 remote
@@ -307,22 +315,205 @@ $ git merge --allow-unrelated-histories <远端分支>
 $ git push <name> master
 ```
 
+**注：在之后为了方便学习，将一些命令与视频里面的进行同步，`<name>` 会用 github 来代替，因为我们把远端的仓库 fetch 下来并且命名为 gitHub 了**
+
 > 个人笔记总结
 >
-> - git remote -v 查看远程版本库信息
+> - `git remote -v` 查看远程版本库信息
 >
-> - git remote add githup <url> 添加githup远程版本库
+> - `git remote add <name> <url> `添加 githup 远程版本库
 >
-> - git fetch githup 拉取远程版本库
+> - `git fetch <name>` 拉取远程版本库
 >
-> - git merge -h 查看合并帮助信息
+> - `git merge -h` 查看合并帮助信息
 >
-> - git merge --allow-unrelated-histories githup/master 合并githup上的master分支（两分支不是父子关系，所以合并需要添加 --allow-unrelated-histories）
-> - git push githup 推送同步到 githup 仓库
+> - `git merge --allow-unrelated-histories githup/master` 合并 `<name>` 上的 master 分支（两分支不是父子关系，所以合并需要添加 --allow-unrelated-histories）
+> - `git push <name>` 推送同步到 `<name>` 仓库
 >
 > —— by DriveMan_邱佳源
 
 > fast forward 到底是什么？
 >
 > 举个例子，本地分支往远端分支做 push，如果远端分支不是本地分支的祖先，那它俩就不是 fast forward 了。反之，它俩就是 fast forward 的关系。
+
+## 第四章 Git 多人单分支集成协作
+
+### 1. 多个人对文件修改
+
+#### 1.1. 不同人修改了不同文件
+
+```bash
+# 
+# 会出现 Non fast_forwards 的报错，远端仓库会拒绝这个 push
+# 先把远端的 fetch 下来
+$ git fetch <name>(github)
+# 然后查看 branch 会发现有 [ahead 1, behind 1] 这样的信息，
+# 代表远端有的这里没有和这里有的远端没有
+$ git branch -av
+feature/add_git_commands     07c85df [ahead 1, behind 1] ......
+
+# 有时候会考虑合并
+$ git merge (github/feature/add_git_commands)
+```
+
+> 老师你好，我有个问题哈，clone 命令 git clone git@github.com:git2019/git_learning.git 既然已经把远程仓库所有内容都克隆到本地了，为什么还需要 git checkout -b feature/add_git_commands origin/feature/add_git_command 命令基于远程分支在本地建立分支，不是从远程clone下来了嘛，为什么还要新建，难道 clone 命令不能克隆分支吗？
+>
+> 作者回复：我们在本地无法直接在 clone 下来的远程分支上做变更的，只能基于远程分支建本地分支后，才能创建 commit。
+
+#### 1.2. 不同人修改同一文件的不同区域
+
+```bash
+# pull 会把远端的内容拉下来，并且本地的也会进行更新
+# 简介的方法就是直接 pull，还有一种是 fetch + merge
+# 多查看 branch ，看看 ahead 和 behind 的数目
+$ git branch -av
+
+# 当只有 ahead 没有 behind 的时候，肯定是 fast-forward 可以提交
+```
+
+> fast-forword 看了英语翻译为快进，结合 git branch -av 中的 ahead 和 behind，ahead 是本地仓库比远端仓库多 commit，behind 是本地仓库比远端仓库少 commit。对正常的备份系统来说，我本地只能比备份多，备份不可能比我本地多才是。然而，git 由于多用户提交原因出现备份比本地多了，本地滞后了，所以需要 pull 一下，让本地比备份相等或多，这种情况就是 fast forward ，也就是我本地要比备份快进。不知理解对否？
+>
+> 作者回复：其实就是两个分支的关系为 0|n 或者 n|0 ，如果两个分支直接为 n|m 的关系就不是 fast forward 。A 分支比 B 分支多 5 个 commit，B 比 A 分支多 3 个 commit。A 和 B 就不是 fast forward。
+
+#### 1.3. 不同人修改同一文件的同一区域
+
+```bash
+# 如果 push 不上去，使用 merge 又提示已经更新到最新了
+# 就说明远端变了，要及时更新
+$ git pull
+Auto-merging (index.html)
+CONFLICT(content): Merge conflict in (index.html)
+# 提示 CONFLICT(content) 说明文件有冲突，不能自动合并 index.html
+# 打开这个文件，会提示哪里出现冲突
+$ vi index.html
+# 编辑完成后查看状态
+$ git status
+
+# 如果这个分支有问题了，可以用 --abort 退出合并
+$ git merge --abort
+$ git commit -am'(commit text)'
+```
+
+### 2. 更改了文件名
+
+#### 2.1. 同时变更了文件名和内容
+
+```bash
+# 其中有一个人变更了文件名
+# 另一个人只变更了文件内容
+# pull 的话会智能识别问题
+$ git pull
+```
+
+#### 2.2. 同一文件改成不同的文件名
+
+```bash
+# 依旧是报冲突
+$ git pull
+# 查看工作目录，会出现未命名的文件，和两个重命名的文件
+# 如果使用 diff 查看两个文件的差异，不会显示差异
+$ diff <file-1> <file-2>
+# 使用 status，会提示：
+both deleted:  <oldfilename>
+added by us:   <filename-1>
+added by them: <filename-2>
+# 可以先移除不要的文件，再加上想要保存的文件名
+$ git rm <filename-2>
+$ git add <filename-1>
+$ git commit -am'(commit text)'
+```
+
+## 第五章 集成使用禁忌
+
+### 1. 禁止向集成分支执行 push -f
+
+`-f, --force` 是强制更新，即使不是 fast-forward 也可以 push。
+
+```bash
+# 把历史 reset 到某个 log
+$ git reset --hard (b3f390c)
+# 强制 push，就会把在 b3f390c 后面做的改变都删除
+$ git push -f (origin) (feature/add_git_commands)
+```
+
+### 2. 禁止向集成分支执行变更历史的操作
+
+## 第六章 GitHub
+
+### 1. 核心功能
+
+代码预览、项目管理、集成、团队管理、社交编码（开源）、文档、存放代码。
+
+### 2. 寻找开源项目
+
+ 使用高级搜索：光标放在搜索框里，按回车就会出现 advanced search 了。
+
+可以在 Help 上查看有哪些高级搜索的语法。  
+
+### 3. 搭建个人博客
+
+通过高级搜索在搜索框中输入 `blog easily start in:readme stars:>5000` 找到 jekyll-now 仓库。
+
+第一步就是 fork 一个到自己的账号里去。fork 完后修改工程名称：`<username>.github.io`
+
+第二步修改 `_config.yml`。
+
+在 `_posts` 里面新增文件格式为：`2018-12-24-<title>.md`
+
+ 
+
+## 第七章 团队协作
+
+### 1. 创建团队项目
+
+### 3. 挑选合适的分支集成策略
+
+在仓库的 Insights => Network 里可以看到特性分支演变历史。
+
+在 Options 的 Merge button 可以设置允许哪种合并。
+
+1. merge 把分支最后合并到 master 上去；
+2. squash merging 把分支的所有 commits 变成一个，再放到主线上去。（在当前主线后面加上）
+3. rebase merging 把分支的所有 commits 添加到主线后面去。
+
+后面两种适合于线性开发的情况。
+
+### 4. issue 跟踪
+
+issue 上有标签管理，对不同的问题进行分类。
+
+还可以对 issue 进行模型管理，自定义一些问题报告的模板。
+
+有 Bug report、Feature request 等。
+
+**使用 Projects 的看板来管理 issue**
+
+点击 Pojects 进行看板（Board）的设置。
+
+### 5. Code review
+
+在 Settings 的 Branches 上可以设置特殊分支的保护规则。比如对于 master 分支进行 push 保护，每次 push 都要有特定人数去检查才能通过。
+
+### 6. 多分支的集成
+
+特性分支往主干合，要发 Pull requests。
+
+`git rerere` 是一个隐藏功能，允许你让 Git 记住解决一个块冲突的方法，在下一次看到相同冲突时，自动解决。
+
+## 第八章 GitLab
+
+这两章先看视频过一遍，等到应用的时候可以复习。目前不知道具体的使用需求，先大概看个印象。
+
+## 其它问题
+
+### 1. 在 Windows 上如何支持中文
+
+参考[解决 Git 在 windows 下中文乱码的问题.md](https://gist.github.com/nightire/5069597)。
+
+> 有一个注意的点：目前无法解决输入中文字符会显示乱码的问题
+>
+> 解决方案：
+>
+> 1. `git commit` 时，不用 `-m` 参数，直接回车让 vim 来处理
+> 2. 进 vim 后按 `i` 进入编辑模式，完成后再保存退出
 
